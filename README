@@ -8,6 +8,8 @@ For the original Flash version visit www.flixel.org/flxinvaders
 This port by Initials.
 www.initialscommand.com
 e: initials@initialscommand.com
+With some additions by Philippe Mongeau
+http://phmongeau.github.com
 
 Not a perfect port. Issues (please correct me if I'm wrong):
 
@@ -18,3 +20,8 @@ FlxSprite.color doesn't seem to work.
 I can't figure out how to pass a FlxGroup to a FlxSprite, so all the bullet logic gets done in the PlayState. 
 
 For the original Flash version visit www.flixel.org/flxinvaders
+
+---
+Aditions by Philippe Mongeau:
+	
+	* Changed the ship controls. Touch below the shield line to move the ship and above to shoot.

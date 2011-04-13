@@ -24,6 +24,7 @@ static NSString * ImgShip = @"ship.png";
 		
 		self.x = FlxG.width/2-6;
 		self.y = FlxG.height-12;
+		self.drag = CGPointMake(100, 0);
 
 	}
 	

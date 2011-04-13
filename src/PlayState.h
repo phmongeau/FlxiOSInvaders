@@ -35,7 +35,6 @@
 	
 	FlxText * scoreText;
 
-
 	
 }
 

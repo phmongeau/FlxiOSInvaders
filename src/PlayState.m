@@ -17,7 +17,7 @@
 #import "Ship.h"
 #import "Alien.h"
 
-static CGFloat tiltMultiplier = 550;
+//static CGFloat tiltMultiplier = 550;
 int _playerBulletIndex;
 int _alienBulletIndex;
 
@@ -32,16 +32,14 @@ int _alienBulletIndex;
 	  _aliens = [[FlxGroup alloc] init];
 	  _alienBullets = [[FlxGroup alloc] init];
 	  _shields = [[FlxGroup alloc] init];
-	  _vsShields = [[FlxGroup alloc] init];
-
-
+	  _vsShields = [[FlxGroup alloc] init];  
   }
   return self;
 }
 
 - (void) create
 {
-	[self startAccelerometer];
+	//[self startAccelerometer];
 	
 	scoreText = [FlxText textWithWidth:FlxG.width
 								  text:@"Welcome to FlxInvaders"
@@ -55,7 +53,7 @@ int _alienBulletIndex;
 	
 	ship = [[Ship alloc] init];
 	[self add:ship];
-	
+
 	//First we will instantiate the bullets you fire at your enemies.
 	
 	int i;
@@ -125,7 +123,7 @@ int _alienBulletIndex;
 	[self add:_shields];
 }
 
--(void) accelerometer:(UIAccelerometer *)accelerometer 
+/*-(void) accelerometer:(UIAccelerometer *)accelerometer 
 		didAccelerate:(UIAcceleration *)acceleration
 {
 	
@@ -136,10 +134,10 @@ int _alienBulletIndex;
 	
 	
 	// to use up and down motion, use this instead
-	/*
+	[>
 	ship.velocity = CGPointMake(acceleration.x*tiltMultiplier,
 								  (- acceleration.y*tiltMultiplier) - 150);
-	*/
+	<]
 	
 }
 
@@ -152,12 +150,12 @@ int _alienBulletIndex;
 - (void)stopAccelerometer {
 	UIAccelerometer *accelerometer = [UIAccelerometer sharedAccelerometer];
 	accelerometer.delegate = nil;
-}
+}*/
 
 - (void) dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	[self stopAccelerometer];
+	//[self stopAccelerometer];
 	
 	[_aliens release];
 	[_playerBullets release];
@@ -181,37 +179,43 @@ int _alienBulletIndex;
 	//Finally, we gotta shoot some bullets amirite?  First we check to see if the
 	// screen was just pressed (no autofire in space invaders you guys)
   	if (FlxG.touches.touchesBegan) {
+		//Fire only if the touch is above the shield line so that we can moove the ship without fireing.
+		if (FlxG.touches.screenTouchPoint.y < FlxG.height - 32) {
+			//Fire a bullet
+			FlxSprite * b = [_playerBullets.members objectAtIndex:_playerBulletIndex];
+			b.exists = TRUE;
+			b.x = ship.x + ship.width / 2 - b.width;
+			b.y = ship.y;
+			b.velocity = CGPointMake(0, -240);
+			_playerBulletIndex++;
+			if (_playerBulletIndex>=_playerBullets.members.length) {
+				_playerBulletIndex = 0;	
+			}
+		}
+		else {
+			//Move the ship to x coordinate of touch point
+			float distanceToTouch = FlxG.touches.screenTouchPoint.x - ship.x;
+			ship.velocity = CGPointMake(distanceToTouch, 0);
+			if (distanceToTouch == 0) ship.velocity = CGPointMake(0, 0);
+			NSLog(@"distance: %d", distanceToTouch);
+		}
 		
-	//just for debugging. RAPID FIRE
-	//if (FlxG.touches.touching) { 
-		//Screen was pressed!  FIRE A BULLET
-
-		FlxSprite * b = [_playerBullets.members objectAtIndex:_playerBulletIndex];
-		b.exists = TRUE;
-		b.x = ship.x + ship.width / 2 - b.width;
-		b.y = ship.y;
-		b.velocity = CGPointMake(0, -240);
-		_playerBulletIndex++;
-		if (_playerBulletIndex>=_playerBullets.members.length) {
-			_playerBulletIndex = 0;	
+		//1 in 20 chance of an alien firing a bullet
+		if ([FlxU random]* 20 < 1) {
+			FlxSprite * ab = [_alienBullets.members objectAtIndex:_alienBulletIndex];
+			FlxSprite * randomAlien = [_aliens.members objectAtIndex:[FlxU random]* 49 ];
+			
+			ab.x = randomAlien.x;
+			ab.y = randomAlien.y;
+			ab.velocity = CGPointMake(0, 240);
+			
+			_alienBulletIndex++;
+			if (_alienBulletIndex>=_alienBullets.members.length) {
+				_alienBulletIndex = 0;	
+			}	
 		}
 	}
 	
-	//1 in 20 chance of an alien firing a bullet
-	if ([FlxU random]* 20 < 1) {
-		FlxSprite * ab = [_alienBullets.members objectAtIndex:_alienBulletIndex];
-		FlxSprite * randomAlien = [_aliens.members objectAtIndex:[FlxU random]* 49 ];
-		
-		ab.x = randomAlien.x;
-		ab.y = randomAlien.y;
-		ab.velocity = CGPointMake(0, 240);
-
-		_alienBulletIndex++;
-		if (_alienBulletIndex>=_alienBullets.members.length) {
-			_alienBulletIndex = 0;	
-		}	
-	}
-
 	
 	
 	//This is how we do basic sprite collisions in flixel!
